@@ -20,7 +20,7 @@
 #### 1) Encapsulation (or Virtualization) : 
 This primitive will add a new header (gre) to the packet at a particular location of the header-stack.
 
-#### 2) Congestion Control Aides : 
+#### 2) Congestion Control Aides : CCP[Sigcomm '18]
 This is a set of primitives which monitor various metrics of tcp flows in smart-nic to provide regular feedback to a control plane.
 
 #### 3) Payload Scan : 
@@ -29,7 +29,6 @@ This primitive searches for a pattern in the payload and increments a counter if
 #### 4) Encryption :
 Ideally, netronome supports IPSec, still figuring out how to encrypt/decrypt.
 
-```
 ### Steps to execute a program in Netronome Nic:
 
 1) Load the nfp kernel module :
@@ -56,5 +55,3 @@ Ideally, netronome supports IPSec, still figuring out how to encrypt/decrypt.
 
 Now you must see the vf interfaces in ifconfig.
 
-#### Primitives for programmable switches are summarized in [net-prog-model](net-prog-model/net-prog-model.md)
-#### Primitives for smart-nics are summarized in [nic-prog-model](net-prog-model/nic-prog-model.md)
