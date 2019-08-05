@@ -1,0 +1,762 @@
+~/tofino-nyu/smartnic-prog/ccp$ ./run.sh 
+rm -f ./*.nffw ./*.elf \
+	./*.mif ./*.mift \
+	./*.uci ./*.ucp \
+	./*.dbg
+rm -rf ./nfd_pcie0_pd0.list
+rm -rf ./nfd_pcie0_pci_out_me0.list
+rm -rf ./gro1.list
+rm -rf ./nfd_pcie0_pci_in_issue0.list
+rm -rf ./pif_app_nfd.list
+rm -rf ./app_master.list
+rm -rf ./nfd_svc.list
+rm -rf ./blm0.list
+rm -rf ./nfd_pcie0_sb.list
+rm -rf ./nfd_pcie0_notify.list
+rm -rf ./nfd_pcie0_pci_in_gather.list
+rm -rf ./flowcache_timeout_emu0.list
+rm -rf ./gro0.list
+rm -f ./*.yml ./*.svg 
+rm -f nfp-build/*.c nfp-build/*.h nfp-build/*.json \
+	nfp-build/*.txt nfp-build/*.svg nfp-build/*.csv 
+rm -rf nfp-build/callbackapi
+---------
+compiling p4 ccp.yml
+---------
+/opt/netronome/p4/bin/nfp4c -o ./ccp.yml \
+	-I /opt/netronome/p4/include/1.0/p4_lib/target \
+	--source_info  \
+	ccp.p4
+parsing successful
+Semantic warning: header instance 'ucp' is not reachable and will be removed
+Semantic warning: register 'reportType' is not reachable and will be removed
+Semantic warning: primitive action 'do_get_current_time' is not reachable and will be removed
+Semantic warning: table 'compute_flow_timeout_2' is not reachable and will be removed
+Semantic warning: table 'is_timeout_2' is not reachable and will be removed
+Semantic warning: table 'write_current_time' is not reachable and will be removed
+Semantic warning: header type 'udp_t' is not reachable and will be removed
+Semantic warning: action 'do_compute_flow_timeout_2' is not reachable and will be removed
+Semantic warning: action 'do_write_current_time' is not reachable and will be removed
+semantic checking successful
+Header type standard_metadata_t not byte-aligned, adding padding
+---------
+generating pif nfp-build/pif_design.h
+---------
+/opt/netronome/p4/bin/nfirc -o nfp-build/ \
+	--debugpoints  \
+	./ccp.yml
+warning: action nop has no implementation
+NFP PIF dataplane code successfully generated
+---------
+assembling nfd_pcie0_pd0.list/nfd_pcie0_pd0.list
+---------
+/opt/netronome/bin/nfas -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DNFD_OUT_STAGE_ME="__nfp_idstr2meid(\"i33.me10\")" \
+-DSTAGE_BATCH_MANAGER_CTX=0 \
+-DNFD_OUT_SB_WQ_NUM=15 \
+-chip AMDA0096-0001:0 \
+-go \
+-t \
+-W3 \
+-R \
+-lm 0 \
+-C \
+-Of \
+-Os \
+-O \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-I/opt/netronome/p4/components/flowenv/me/include \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_h \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_uc \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm \
+-I/opt/netronome/p4/components/flowenv/me/blocks \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks/vnic \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/shared \
+-I/opt/netronome/p4/components/ng_nfd/shared \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microcode/src \
+-I/opt/netronome/components/standardlibrary/microcode/include \
+-include /opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-o nfd_pcie0_pd0.list/nfd_pcie0_pd0.list /opt/netronome/p4/components/ng_nfd/me/blocks/vnic/pci_out_pd.uc
+---------
+compiling nfd_pcie0_pci_out_me0.list/nfd_pcie0_pci_out_me0.list
+---------
+/opt/netronome/bin/nfcc -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DNFD_CFG_NEXT_ME="__nfp_idstr2meid(\"i33.me10\")" \
+-DNFD_CFG_SIG_NEXT_ME="nfd_cfg_sig_sb" \
+-UNFP_STDLIB_ENABLE_CMD_INTRINSICS \
+-chip AMDA0096-0001:0 \
+-W3 \
+-Qno_decl_volatile \
+-O2 \
+-mIPOPT_nfp=2 \
+-Zi \
+-Qnctx=8 \
+-Qnctx_mode=8 \
+-Qlm_start=512 \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-Infp-build/callbackapi \
+-I/opt/netronome/p4/components/flowenv/me/include \
+-I/opt/netronome/p4/components/flowenv/me/include/nfp6000 \
+-I/opt/netronome/p4/components/flowenv/me/lib \
+-I/opt/netronome/p4/components/flowenv/me/lib/nfp \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_h \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks \
+-I/opt/netronome/p4/components/ng_nfd/shared \
+-I/opt/netronome/p4/components/ng_nfd \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microc/include \
+-I/opt/netronome/components/standardlibrary/microc/src \
+-FI/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-Fo./nfd_pcie0_pci_out_me0.list/ \
+-Fe./nfd_pcie0_pci_out_me0.list/nfd_pcie0_pci_out_me0  \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/pci_out_me0.c \
+/opt/netronome/p4/components/flowenv/me/lib/nfp/libnfp.c \
+/opt/netronome/p4/components/flowenv/me/lib/std/libstd.c \
+/opt/netronome/p4/components/flowenv/me/lib/pkt/libpkt.c \
+/opt/netronome/p4/components/flowenv/me/lib/pktdma/libpktdma.c \
+/opt/netronome/p4/components/flowenv/me/lib/net/libnet.c \
+/opt/netronome/p4/components/flowenv/me/blocks/blm/libblm.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/utils/libutils.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/shared/nfd_cfg.c \
+/opt/netronome/components/standardlibrary/microc/src/intrinsic.c \
+/opt/netronome/components/standardlibrary/microc/src/rtl.c
+---------
+assembling gro1.list/gro1.list
+---------
+/opt/netronome/bin/nfas -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DNFD_VERSION=0x03010000 \
+-DNFP_LIB_ANY_NFAS_VERSION \
+-DGRO_BLOCK_NUM=1 \
+-chip AMDA0096-0001:0 \
+-go \
+-W3 \
+-R \
+-C \
+-indirect_ref_format_nfp6000 \
+-third_party_addressing_40_bit \
+-permit_dram_unaligned \
+-preproc64 \
+-keep_unreachable_code \
+-lm 0 \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/common/src \
+-I/opt/netronome/p4/components/gro \
+-I/opt/netronome/p4/components/gro/me \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microcode/src \
+-I/opt/netronome/components/standardlibrary/microcode/include \
+-include /opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-o gro1.list/gro1.list /opt/netronome/p4/components/gro/me/gro_out.uc
+---------
+compiling nfd_pcie0_pci_in_issue0.list/nfd_pcie0_pci_in_issue0.list
+---------
+/opt/netronome/bin/nfcc -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DPCI_IN_ISSUE_DMA_IDX=0 \
+-DNFD_IN_NOTIFY_ME="__nfp_idstr2meid(\"pcie0.me3\")" \
+-UNFP_STDLIB_ENABLE_CMD_INTRINSICS \
+-chip AMDA0096-0001:0 \
+-W3 \
+-Qno_decl_volatile \
+-O2 \
+-mIPOPT_nfp=2 \
+-Zi \
+-Qnctx=4 \
+-Qnctx_mode=4 \
+-Qlmpt_reserve_option=0xc \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-Infp-build/callbackapi \
+-I/opt/netronome/p4/components/flowenv/me/include \
+-I/opt/netronome/p4/components/flowenv/me/include/nfp6000 \
+-I/opt/netronome/p4/components/flowenv/me/lib \
+-I/opt/netronome/p4/components/flowenv/me/lib/nfp \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_h \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks \
+-I/opt/netronome/p4/components/ng_nfd/shared \
+-I/opt/netronome/p4/components/ng_nfd \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microc/include \
+-I/opt/netronome/components/standardlibrary/microc/src \
+-FI/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-Fo./nfd_pcie0_pci_in_issue0.list/ \
+-Fe./nfd_pcie0_pci_in_issue0.list/nfd_pcie0_pci_in_issue0  \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/pci_in_me1.c \
+/opt/netronome/p4/components/flowenv/me/lib/nfp/libnfp.c \
+/opt/netronome/p4/components/flowenv/me/lib/std/libstd.c \
+/opt/netronome/p4/components/flowenv/me/lib/pkt/libpkt.c \
+/opt/netronome/p4/components/flowenv/me/lib/pktdma/libpktdma.c \
+/opt/netronome/p4/components/flowenv/me/lib/net/libnet.c \
+/opt/netronome/p4/components/flowenv/me/blocks/blm/libblm.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/utils/libutils.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/shared/nfd_cfg.c \
+/opt/netronome/components/standardlibrary/microc/src/intrinsic.c \
+/opt/netronome/components/standardlibrary/microc/src/rtl.c
+
+---------
+compiling pif_app_nfd.list/pif_app_nfd.list
+---------
+/opt/netronome/bin/nfcc -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DPIF_APP_MASTER_ME=0x204 \
+-UNFP_STDLIB_ENABLE_CMD_INTRINSICS \
+-chip AMDA0096-0001:0 \
+-W3 \
+-Qno_decl_volatile \
+-O2 \
+-mIPOPT_nfp=2 \
+-Zi \
+-Qnctx=4 \
+-Qnctx_mode=4 \
+-Qnn_mode=1 \
+-Qspill=3 \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/common/include \
+-I/opt/netronome/p4/components/nfp_pif/shared/include \
+-I/opt/netronome/p4/components/nfp_pif/me/lib/pif/include \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-Infp-build/callbackapi \
+-I/opt/netronome/p4/components/nfp_pif/me/lib/hashmap/include \
+-I/opt/netronome/p4/components/flowenv/me/include \
+-I/opt/netronome/p4/components/flowenv/me/include/nfp6000 \
+-I/opt/netronome/p4/components/flowenv/me/lib \
+-I/opt/netronome/p4/components/flowenv/me/lib/nfp \
+-I/opt/netronome/p4/components/flowcache/me/lib/flowcache \
+-I/opt/netronome/p4/components/flowcache/me/lib/standardlibrary \
+-I/opt/netronome/p4/components/dcfl/me/lib/dcfl \
+-I/opt/netronome/p4/components/dcfl/shared/include/dcfl \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_h \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm \
+-I/opt/netronome/p4/components/gro \
+-I/opt/netronome/p4/components/ng_nfd/me/lib \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks \
+-I/opt/netronome/p4/components/ng_nfd/shared \
+-I/opt/netronome/p4/components/ng_nfd \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microc/include \
+-I/opt/netronome/components/standardlibrary/microc/src \
+-FI/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-Fo./pif_app_nfd.list/ \
+-Fe./pif_app_nfd.list/pif_app_nfd  \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/pif_app_nfd.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/pkt_ops.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/pkt_clone.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/mcast.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/dcfl_init.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/system_init.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/pif_pkt_mod_script.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/fc.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/mac_time_user.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/pif_action_common.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/pif_meter.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/pif_lookup.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/pif_pkt.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/pif_counters.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/pif_init.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/pif_flcalc_algorithms.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/pif_memops.c \
+nfp-build/pif_design.c \
+nfp-build/pif_parrep.c \
+nfp-build/pif_actions.c \
+nfp-build/pif_global.c \
+nfp-build/pif_ctlflow.c \
+nfp-build/pif_tables.c \
+nfp-build/pif_deparse.c \
+nfp-build/pif_digests.c \
+nfp-build/pif_meters.c \
+nfp-build/pif_registers.c \
+nfp-build/pif_pkt_recurse.c \
+nfp-build/pif_pkt_clone.c \
+nfp-build/pif_flcalc.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/hashmap/src/camp_hash.c \
+/opt/netronome/p4/components/flowenv/me/lib/nfp/libnfp.c \
+/opt/netronome/p4/components/flowenv/me/lib/std/libstd.c \
+/opt/netronome/p4/components/flowenv/me/lib/pkt/libpkt.c \
+/opt/netronome/p4/components/flowenv/me/lib/pktdma/libpktdma.c \
+/opt/netronome/p4/components/flowenv/me/lib/net/libnet.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/jenkins_hash.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache_remove.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache_timestamp.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache_lock.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/mem_atomic_indirect.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/mem_cam_add_inc.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/cluster_target.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/cam.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/rotate.c \
+/opt/netronome/p4/components/dcfl/me/lib/dcfl/libdcfl.c \
+/opt/netronome/p4/components/flowenv/me/blocks/blm/libblm.c \
+/opt/netronome/p4/components/gro/libgro.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/libnfd.c \
+/opt/netronome/components/standardlibrary/microc/src/intrinsic.c \
+/opt/netronome/components/standardlibrary/microc/src/rtl.c \
+ccp.c
+---------
+compiling app_master.list/app_master.list
+---------
+/opt/netronome/bin/nfcc -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DAPP_MES_LIST="((( 0 + 32) << 4) + ( 0 + 4)), ((( 1 + 32) << 4) + ( 0 + 4)), ((( 2 + 32) << 4) + ( 0 + 4)), ((( 3 + 32) << 4) + ( 0 + 4))" \
+-DNFD_CFG_NEXT_ME0="__nfp_idstr2meid(\"i36.me11\")" \
+-DNFD_CFG_SIG_NEXT_ME0="nfd_cfg_sig_app_master0" \
+-DNFD_CFG_NEXT_ME1="__nfp_idstr2meid(\"i36.me11\")" \
+-DNFD_CFG_SIG_NEXT_ME1="nfd_cfg_sig_app_master1" \
+-DNFD_CFG_NEXT_ME2="__nfp_idstr2meid(\"i36.me11\")" \
+-DNFD_CFG_SIG_NEXT_ME2="nfd_cfg_sig_app_master2" \
+-DNFD_CFG_NEXT_ME3="__nfp_idstr2meid(\"i36.me11\")" \
+-DNFD_CFG_SIG_NEXT_ME3="nfd_cfg_sig_app_master3" \
+-DMASTERME \
+-DGLOBAL_INIT \
+-UNFP_STDLIB_ENABLE_CMD_INTRINSICS \
+-chip AMDA0096-0001:0 \
+-W3 \
+-Qno_decl_volatile \
+-O2 \
+-mIPOPT_nfp=2 \
+-Zi \
+-Qnctx=8 \
+-Qnctx_mode=8 \
+-Qnn_mode=1 \
+-Qspill=3 \
+-I/opt/netronome/p4/components/nfp_pif/me/lib/pif/include \
+-I/opt/netronome/p4/components/nfp_pif/shared/include \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/common/include \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-Infp-build/callbackapi \
+-I/opt/netronome/p4/components/nfp_pif/me/lib/hashmap/include \
+-I/opt/netronome/p4/components/flowenv/me/include \
+-I/opt/netronome/p4/components/flowenv/me/include/nfp6000 \
+-I/opt/netronome/p4/components/flowenv/me/lib \
+-I/opt/netronome/p4/components/flowenv/me/lib/nfp \
+-I/opt/netronome/p4/components/flowcache/me/lib/flowcache \
+-I/opt/netronome/p4/components/flowcache/me/lib/standardlibrary \
+-I/opt/netronome/p4/components/dcfl/me/lib/dcfl \
+-I/opt/netronome/p4/components/dcfl/shared/include/dcfl \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_h \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm \
+-I/opt/netronome/p4/components/gro \
+-I/opt/netronome/p4/components/ng_nfd/me/lib \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks \
+-I/opt/netronome/p4/components/ng_nfd/shared \
+-I/opt/netronome/p4/components/ng_nfd \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microc/include \
+-I/opt/netronome/components/standardlibrary/microc/src \
+-FI/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-Fo./app_master.list/ \
+-Fe./app_master.list/app_master  \
+/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/src/app_master.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/pif_init.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/pif/src/mac_time.c \
+nfp-build/pif_digests.c \
+nfp-build/pif_parrep_pvs_sync.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/mac_flush.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/dcfl_init.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/system_init.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/pif_pkt_mod_script.c \
+/opt/netronome/p4/components/nfp_pif/me/lib/hashmap/src/camp_hash.c \
+/opt/netronome/p4/components/flowenv/me/lib/nfp/libnfp.c \
+/opt/netronome/p4/components/flowenv/me/lib/std/libstd.c \
+/opt/netronome/p4/components/flowenv/me/lib/pkt/libpkt.c \
+/opt/netronome/p4/components/flowenv/me/lib/pktdma/libpktdma.c \
+/opt/netronome/p4/components/flowenv/me/lib/net/libnet.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/jenkins_hash.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache_remove.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache_timestamp.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache_lock.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/mem_atomic_indirect.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/mem_cam_add_inc.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/cluster_target.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/cam.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/rotate.c \
+/opt/netronome/p4/components/dcfl/me/lib/dcfl/libdcfl.c \
+/opt/netronome/p4/components/flowenv/me/blocks/blm/libblm.c \
+/opt/netronome/p4/components/gro/libgro.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/libnfd.c \
+/opt/netronome/components/standardlibrary/microc/src/intrinsic.c \
+/opt/netronome/components/standardlibrary/microc/src/rtl.c
+---------
+compiling nfd_svc.list/nfd_svc.list
+---------
+/opt/netronome/bin/nfcc -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DNFD_CFG_NEXT_ME0="__nfp_idstr2meid(\"i36.me11\")" \
+-DNFD_CFG_SIG_NEXT_ME0="nfd_cfg_sig_app_master0" \
+-DNFD_CFG_NEXT_ME1="__nfp_idstr2meid(\"i36.me11\")" \
+-DNFD_CFG_SIG_NEXT_ME1="nfd_cfg_sig_app_master1" \
+-DNFD_CFG_NEXT_ME2="__nfp_idstr2meid(\"i36.me11\")" \
+-DNFD_CFG_SIG_NEXT_ME2="nfd_cfg_sig_app_master2" \
+-DNFD_CFG_NEXT_ME3="__nfp_idstr2meid(\"i36.me11\")" \
+-DNFD_CFG_SIG_NEXT_ME3="nfd_cfg_sig_app_master3" \
+-UNFP_STDLIB_ENABLE_CMD_INTRINSICS \
+-chip AMDA0096-0001:0 \
+-W3 \
+-Qno_decl_volatile \
+-O2 \
+-mIPOPT_nfp=2 \
+-Zi \
+-Qnctx=8 \
+-Qnctx_mode=8 \
+-Qnn_mode=1 \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-Infp-build/callbackapi \
+-I/opt/netronome/p4/components/flowenv/me/include \
+-I/opt/netronome/p4/components/flowenv/me/include/nfp6000 \
+-I/opt/netronome/p4/components/flowenv/me/lib \
+-I/opt/netronome/p4/components/flowenv/me/lib/nfp \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_h \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks \
+-I/opt/netronome/p4/components/ng_nfd/shared \
+-I/opt/netronome/p4/components/ng_nfd \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microc/include \
+-I/opt/netronome/components/standardlibrary/microc/src \
+-FI/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-Fo./nfd_svc.list/ \
+-Fe./nfd_svc.list/nfd_svc  \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/svc_me.c \
+/opt/netronome/p4/components/flowenv/me/lib/nfp/libnfp.c \
+/opt/netronome/p4/components/flowenv/me/lib/std/libstd.c \
+/opt/netronome/p4/components/flowenv/me/lib/pkt/libpkt.c \
+/opt/netronome/p4/components/flowenv/me/lib/pktdma/libpktdma.c \
+/opt/netronome/p4/components/flowenv/me/lib/net/libnet.c \
+/opt/netronome/p4/components/flowenv/me/blocks/blm/libblm.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/utils/libutils.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/shared/nfd_cfg.c \
+/opt/netronome/components/standardlibrary/microc/src/intrinsic.c \
+/opt/netronome/components/standardlibrary/microc/src/rtl.c
+---------
+assembling blm0.list/blm0.list
+---------
+/opt/netronome/bin/nfas -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DBLM_0_ISLAND_48 \
+-DBLM_1_ISLAND_49 \
+-DNBII=8 \
+-DBLM_INSTANCE_ID=0 \
+-DBLM_INIT_EMU_RINGS \
+-DNBI_DMA_FANOUT_ISLANDS=1 \
+-DCATAMARAN_PICO_CODE=1 \
+-DNBI_COUNT=2 \
+-DBLM_BLQ_EMEM_TYPE=emem \
+-chip AMDA0096-0001:0 \
+-go \
+-W3 \
+-R \
+-C \
+-Of \
+-Os \
+-O \
+-indirect_ref_format_nfp6000 \
+-third_party_addressing_40_bit \
+-permit_dram_unaligned \
+-preproc64 \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_h \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_uc \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm \
+-I/opt/netronome/p4/components/flowenv/me/blocks \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microcode/src \
+-I/opt/netronome/components/standardlibrary/microcode/include \
+-include /opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-o blm0.list/blm0.list /opt/netronome/p4/components/flowenv/me/blocks/blm/blm_main.uc
+---------
+assembling nfd_pcie0_sb.list/nfd_pcie0_sb.list
+---------
+/opt/netronome/bin/nfas -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DSTAGE_BATCH_MANAGER_CTX=0 \
+-DSTAGE_BATCH_FIRST_WORKER=1 \
+-DSTAGE_BATCH_NUM_WORKERS=7 \
+-DNFD_CFG_NEXT_ME="__nfp_idstr2meid(\"i48.me2\")" \
+-DNFD_CFG_SIG_NEXT_ME="_nfd_cfg_sig_svc_me0" \
+-DNFD_OUT_SB_WQ_NUM=15 \
+-chip AMDA0096-0001:0 \
+-go \
+-t \
+-W3 \
+-R \
+-lm 0 \
+-C \
+-Of \
+-Os \
+-O \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks/vnic \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/shared \
+-I/opt/netronome/p4/components/ng_nfd/shared \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microcode/src \
+-I/opt/netronome/components/standardlibrary/microcode/include \
+-include /opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-o nfd_pcie0_sb.list/nfd_pcie0_sb.list /opt/netronome/p4/components/ng_nfd/me/blocks/vnic/pci_out_sb.uc
+---------
+compiling nfd_pcie0_notify.list/nfd_pcie0_notify.list
+---------
+/opt/netronome/bin/nfcc -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DNFD_IN_NOTIFY_DBG_CHKS \
+-DNFD_IN_DATA_DMA_ME0="__nfp_idstr2meid(\"pcie0.me2\")" \
+-UNFP_STDLIB_ENABLE_CMD_INTRINSICS \
+-chip AMDA0096-0001:0 \
+-W3 \
+-Qno_decl_volatile \
+-O2 \
+-mIPOPT_nfp=2 \
+-Zi \
+-Qnctx=4 \
+-Qnctx_mode=4 \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-Infp-build/callbackapi \
+-I/opt/netronome/p4/components/flowenv/me/include \
+-I/opt/netronome/p4/components/flowenv/me/include/nfp6000 \
+-I/opt/netronome/p4/components/flowenv/me/lib \
+-I/opt/netronome/p4/components/flowenv/me/lib/nfp \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_h \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks \
+-I/opt/netronome/p4/components/ng_nfd/shared \
+-I/opt/netronome/p4/components/ng_nfd \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microc/include \
+-I/opt/netronome/components/standardlibrary/microc/src \
+-FI/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-Fo./nfd_pcie0_notify.list/ \
+-Fe./nfd_pcie0_notify.list/nfd_pcie0_notify  \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/pci_in/notify.c \
+/opt/netronome/p4/components/flowenv/me/lib/nfp/libnfp.c \
+/opt/netronome/p4/components/flowenv/me/lib/std/libstd.c \
+/opt/netronome/p4/components/flowenv/me/lib/pkt/libpkt.c \
+/opt/netronome/p4/components/flowenv/me/lib/pktdma/libpktdma.c \
+/opt/netronome/p4/components/flowenv/me/lib/net/libnet.c \
+/opt/netronome/p4/components/flowenv/me/blocks/blm/libblm.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/utils/libutils.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/shared/nfd_cfg.c \
+/opt/netronome/components/standardlibrary/microc/src/intrinsic.c \
+/opt/netronome/components/standardlibrary/microc/src/rtl.c
+---------
+compiling nfd_pcie0_pci_in_gather.list/nfd_pcie0_pci_in_gather.list
+---------
+/opt/netronome/bin/nfcc -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DNFD_IN_DATA_DMA_ME0="__nfp_idstr2meid(\"pcie0.me2\")" \
+-DNFD_OUT_CACHE_ME="__nfp_idstr2meid(\"pcie0.me0\")" \
+-UNFP_STDLIB_ENABLE_CMD_INTRINSICS \
+-chip AMDA0096-0001:0 \
+-W3 \
+-Qno_decl_volatile \
+-O2 \
+-mIPOPT_nfp=2 \
+-Zi \
+-Qnctx=8 \
+-Qnctx_mode=8 \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-Infp-build/callbackapi \
+-I/opt/netronome/p4/components/flowenv/me/include \
+-I/opt/netronome/p4/components/flowenv/me/include/nfp6000 \
+-I/opt/netronome/p4/components/flowenv/me/lib \
+-I/opt/netronome/p4/components/flowenv/me/lib/nfp \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm/_h \
+-I/opt/netronome/p4/components/flowenv/me/blocks/blm \
+-I/opt/netronome/p4/components/ng_nfd/me/blocks \
+-I/opt/netronome/p4/components/ng_nfd/shared \
+-I/opt/netronome/p4/components/ng_nfd \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microc/include \
+-I/opt/netronome/components/standardlibrary/microc/src \
+-FI/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-Fo./nfd_pcie0_pci_in_gather.list/ \
+-Fe./nfd_pcie0_pci_in_gather.list/nfd_pcie0_pci_in_gather  \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/pci_in_me0.c \
+/opt/netronome/p4/components/flowenv/me/lib/nfp/libnfp.c \
+/opt/netronome/p4/components/flowenv/me/lib/std/libstd.c \
+/opt/netronome/p4/components/flowenv/me/lib/pkt/libpkt.c \
+/opt/netronome/p4/components/flowenv/me/lib/pktdma/libpktdma.c \
+/opt/netronome/p4/components/flowenv/me/lib/net/libnet.c \
+/opt/netronome/p4/components/flowenv/me/blocks/blm/libblm.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/utils/libutils.c \
+/opt/netronome/p4/components/ng_nfd/me/blocks/vnic/shared/nfd_cfg.c \
+/opt/netronome/components/standardlibrary/microc/src/intrinsic.c \
+/opt/netronome/components/standardlibrary/microc/src/rtl.c
+---------
+compiling flowcache_timeout_emu0.list/flowcache_timeout_emu0.list
+---------
+/opt/netronome/bin/nfcc -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DFC_TIMEOUT_EMU=0 \
+-UNFP_STDLIB_ENABLE_CMD_INTRINSICS \
+-chip AMDA0096-0001:0 \
+-W3 \
+-Qno_decl_volatile \
+-O2 \
+-mIPOPT_nfp=2 \
+-Zi \
+-Qnctx=8 \
+-Qnctx_mode=8 \
+-Qnn_mode=1 \
+-Qspill=3 \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/common/include \
+-I/opt/netronome/p4/components/nfp_pif/shared/include \
+-Infp-build/ \
+-Infp-build/callbackapi \
+-I/opt/netronome/p4/components/dcfl/me/lib/dcfl \
+-I/opt/netronome/p4/components/dcfl/shared/include/dcfl \
+-I/opt/netronome/p4/components/flowenv/me/include \
+-I/opt/netronome/p4/components/flowenv/me/include/nfp6000 \
+-I/opt/netronome/p4/components/flowenv/me/lib \
+-I/opt/netronome/p4/components/flowenv/me/lib/nfp \
+-I/opt/netronome/p4/components/flowcache/me/lib/flowcache \
+-I/opt/netronome/p4/components/flowcache/me/lib/standardlibrary \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microc/include \
+-I/opt/netronome/components/standardlibrary/microc/src \
+-FI/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-Fo./flowcache_timeout_emu0.list/ \
+-Fe./flowcache_timeout_emu0.list/flowcache_timeout_emu0  \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/dcfl_init.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/system_init.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/pif_pkt_mod_script.c \
+/opt/netronome/p4/components/nfp_pif/me/apps/common/src/fc.c \
+/opt/netronome/p4/components/dcfl/me/lib/dcfl/libdcfl.c \
+/opt/netronome/p4/components/flowenv/me/lib/nfp/libnfp.c \
+/opt/netronome/p4/components/flowenv/me/lib/std/libstd.c \
+/opt/netronome/p4/components/flowenv/me/lib/pkt/libpkt.c \
+/opt/netronome/p4/components/flowenv/me/lib/pktdma/libpktdma.c \
+/opt/netronome/p4/components/flowenv/me/lib/net/libnet.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache_remove.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache_timeout.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache_timeout_lock.c \
+/opt/netronome/p4/components/flowcache/me/lib/flowcache/_c/flow_cache_timestamp.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/cluster_target.c \
+/opt/netronome/p4/components/flowcache/me/lib/standardlibrary/_c/mem_atomic_indirect.c \
+/opt/netronome/components/standardlibrary/microc/src/intrinsic.c \
+/opt/netronome/components/standardlibrary/microc/src/rtl.c
+---------
+assembling gro0.list/gro0.list
+---------
+/opt/netronome/bin/nfas -DPLATFORM_PORT_SELECTION=H_PLATFORM \
+-DPIF_APP_CONFIG=PIF_APP_DEFAULT \
+-DNUM_IMU=1 \
+-DNUM_EMU=1 \
+-DSIMULATION=0 \
+-DPIF_DEBUG=1 \
+-DNFD_VERSION=0x03010000 \
+-DNFP_LIB_ANY_NFAS_VERSION \
+-DGRO_BLOCK_NUM=0 \
+-chip AMDA0096-0001:0 \
+-go \
+-W3 \
+-R \
+-C \
+-indirect_ref_format_nfp6000 \
+-third_party_addressing_40_bit \
+-permit_dram_unaligned \
+-preproc64 \
+-keep_unreachable_code \
+-lm 0 \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include \
+-Infp-build/ \
+-I/opt/netronome/p4/components/nfp_pif/me/apps/common/src \
+-I/opt/netronome/p4/components/gro \
+-I/opt/netronome/p4/components/gro/me \
+-I/opt/netronome/components/standardlibrary/include \
+-I/opt/netronome/components/standardlibrary/microcode/src \
+-I/opt/netronome/components/standardlibrary/microcode/include \
+-include /opt/netronome/p4/components/nfp_pif/me/apps/pif_app_nfd/include/config.h \
+-o gro0.list/gro0.list /opt/netronome/p4/components/gro/me/gro_out.uc
+---------
+linking ccp.nffw
+---------
+/opt/netronome/bin/nfld -rtsyms -mip -user_note_f pif_debug_json "nfp-build/pif_debug.json" -g \
+	-i i8 -e /opt/netronome/components/standardlibrary/picocode/nfp6000/catamaran/catamaran.npfw \
+	-chip AMDA0096-0001:0 -g -o ccp.nffw \
+	-u i33.me11 ./nfd_pcie0_pd0.list/nfd_pcie0_pd0.list \
+	-u pcie0.me0 ./nfd_pcie0_pci_out_me0.list/nfd_pcie0_pci_out_me0.list \
+	-u i48.me1 ./gro1.list/gro1.list \
+	-u pcie0.me2 ./nfd_pcie0_pci_in_issue0.list/nfd_pcie0_pci_in_issue0.list \
+	-u i32.me0 i33.me0 i34.me0 i35.me0 i36.me0 i32.me1 i33.me1 \
+		i34.me1 i35.me1 i36.me1 i32.me2 i33.me2 i34.me2 i35.me2 \
+		i36.me2 i32.me3 i33.me3 i34.me3 i35.me3 i36.me3 i32.me4 \
+		i33.me4 i34.me4 i35.me4 i36.me4 i32.me5 i33.me5 i34.me5 \
+		i35.me5 i36.me5 i32.me6 i33.me6 i34.me6 i35.me6 i36.me6 \
+		i32.me7 i33.me7 i34.me7 i35.me7 i36.me7 i32.me8 i33.me8 \
+		i34.me8 i35.me8 i36.me8 i32.me9 i33.me9 i34.me9 i35.me9 \
+		i36.me9 i32.me10 i34.me10 i35.me10 i32.me11 i34.me11 \
+		i35.me11 ./pif_app_nfd.list/pif_app_nfd.list \
+	-u i36.me11 ./app_master.list/app_master.list \
+	-u i48.me2 ./nfd_svc.list/nfd_svc.list \
+	-u i48.me3 ./blm0.list/blm0.list \
+	-u i33.me10 ./nfd_pcie0_sb.list/nfd_pcie0_sb.list \
+	-u pcie0.me3 ./nfd_pcie0_notify.list/nfd_pcie0_notify.list \
+	-u pcie0.me1 ./nfd_pcie0_pci_in_gather.list/nfd_pcie0_pci_in_gather.list \
+	-u i36.me10 ./flowcache_timeout_emu0.list/flowcache_timeout_emu0.list \
+	-u i48.me0 ./gro0.list/gro0.list 
+ERROR: ./pif_app_nfd.list/pif_app_nfd.list(40980) -- Error: Too many instructions to fit in microengine codespace.
+
+

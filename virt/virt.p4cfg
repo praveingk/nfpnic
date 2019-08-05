@@ -1,0 +1,93 @@
+{
+    "tables": {
+    "forward": {
+        "rules": [
+            {
+                "action": {
+                    "data": {
+                        "egress_spec": {
+                            "value": "p1"
+                        }
+                    },
+                    "type": "do_forward"
+                },
+                "name": "p1",
+                "match": {
+                    "standard_metadata.ingress_port": {
+                        "value": "v0.0"
+                    }
+                }
+            },
+            {
+                "action": {
+                    "data": {
+                        "egress_spec": {
+                            "value": "v0.0"
+                        }
+                    },
+                    "type": "do_forward"
+                },
+                "name": "p2",
+                "match": {
+                    "standard_metadata.ingress_port": {
+                        "value": "p1"
+                    }
+                }
+            },
+            {
+                "action": {
+                    "data": {
+                        "egress_spec": {
+                            "value": "p0"
+                        }
+                    },
+                    "type": "do_forward"
+                },
+                "name": "p3",
+                "match": {
+                    "standard_metadata.ingress_port": {
+                        "value": "v0.1"
+                    }
+                }
+            },
+            {
+                "action": {
+                    "data": {
+                        "egress_spec": {
+                            "value": "v0.1"
+                        }
+                    },
+                    "type": "do_forward"
+                },
+                "name": "p4",
+                "match": {
+                    "standard_metadata.ingress_port": {
+                        "value": "p0"
+                    }
+                }
+            }
+        ]
+    },
+    "encap": {
+        "default_rule": {
+            "action": {
+                "type": "nop"
+            },
+            "name": "nop_1"
+        },
+        "rules": [
+            {
+                "action": {
+                    "type": "do_encap"
+                },
+                "name": "r1",
+                "match": {
+                    "standard_metadata.ingress_port": {
+                        "value": "v0.0"
+                    }
+                }
+            }
+        ]
+    }
+    }
+}
