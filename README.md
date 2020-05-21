@@ -1,3 +1,16 @@
+### Primitives for NIC (Netronome)
+
+#### 1) Encapsulation (or Virtualization) : 
+This primitive will add a new header (gre) to the packet at a particular location of the header-stack.
+
+#### 2) Congestion Control Aides : CCP[Sigcomm '18]
+This is a set of primitives which monitor various metrics of tcp flows in smart-nic to provide regular feedback to a control plane.
+
+#### 3) Payload Scan : 
+This primitive searches for a pattern in the payload and increments a counter if it matches. One problem with doing this in smart-nic as opposed to tofino is that, this reduces the throughtput of the effective packets by upto 90%.
+
+#### 4) Encryption :
+Ideally, netronome supports IPSec, still figuring out how to encrypt/decrypt.
 ### Use-Cases only for Smart NICs
 1) Host-based Congestion-control.
 2) Virtualization (e.g. VXLAN, GRE, VFP)
@@ -13,21 +26,6 @@
 2) Network Functions  (e.g. SLB, firewalls, NAT, etc).
 3) Network Security (DDoS, IDS , etc).
 4) Computation based on network data.
-
-
-### Primitives for NIC
-
-#### 1) Encapsulation (or Virtualization) : 
-This primitive will add a new header (gre) to the packet at a particular location of the header-stack.
-
-#### 2) Congestion Control Aides : CCP[Sigcomm '18]
-This is a set of primitives which monitor various metrics of tcp flows in smart-nic to provide regular feedback to a control plane.
-
-#### 3) Payload Scan : 
-This primitive searches for a pattern in the payload and increments a counter if it matches. One problem with doing this in smart-nic as opposed to tofino is that, this reduces the throughtput of the effective packets by upto 90%.
-
-#### 4) Encryption :
-Ideally, netronome supports IPSec, still figuring out how to encrypt/decrypt.
 
 ### Steps to execute a program in Netronome Nic:
 
